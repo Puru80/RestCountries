@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RestCountries</string>
+    <string name="region_asia">Region: Asia</string>
 </resources>
