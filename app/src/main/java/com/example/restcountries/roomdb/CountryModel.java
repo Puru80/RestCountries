@@ -1,5 +1,6 @@
 package com.example.restcountries.roomdb;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -9,6 +10,8 @@ import java.util.List;
 @Entity(tableName = "countrymodel")
 public class CountryModel {
     @PrimaryKey
+    @ColumnInfo(name = "id")
+    private int id;
     @ColumnInfo(name = "name")
     private String name;
     @ColumnInfo(name = "capital")
@@ -22,13 +25,17 @@ public class CountryModel {
     @ColumnInfo(name = "population")
     private long population;
     @ColumnInfo(name = "borders")
-    private List<String> borders;
+    private String borders;
     @ColumnInfo(name = "languages")
-    private List<String> languages;
+    private String languages;
+
+    public CountryModel(int id) {
+        this.id = id;
+    }
 
     /*
-        Display following attributes - name, capital, flag(display image in app), region,
-        subregion, population, borders & languages.
+        Display following attributes - name, capital, flag(display image in app),
+        region, subregion, population, borders & languages.
     */
 
     /*
@@ -70,11 +77,20 @@ public class CountryModel {
         }
     */
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
@@ -118,19 +134,33 @@ public class CountryModel {
         this.population = population;
     }
 
-    public List<String> getBorders() {
+    public String getBorders() {
         return borders;
     }
 
-    public void setBorders(List<String> borders) {
+    public void setBorders(String borders) {
         this.borders = borders;
     }
 
-    public List<String> getLanguages() {
+    public String getLanguages() {
         return languages;
     }
 
-    public void setLanguages(List<String> languages) {
+    public void setLanguages(String languages) {
         this.languages = languages;
+    }
+
+    @Override
+    public String toString() {
+        return "CountryModel{" +
+                "name='" + name + '\'' +
+                ", capital='" + capital + '\'' +
+                ", flag='" + flag + '\'' +
+                ", region='" + region + '\'' +
+                ", subregion='" + subregion + '\'' +
+                ", population=" + population +
+                ", borders=" + borders +
+                ", languages=" + languages +
+                '}';
     }
 }

@@ -1,18 +1,19 @@
 package com.example.restcountries;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.example.restcountries.roomdb.CountryModel;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CountryDataService {
-    private String query = "https://restcountries.eu/rest/v2/region/asia";
     Context context;
 
     public CountryDataService(Context context) {
@@ -28,12 +29,14 @@ public class CountryDataService {
     public void getCountryData(VolleyResponseListener responseListener){
         List<CountryModel> countryList = new ArrayList<>();
 
+        String query = "https://restcountries.eu/rest/v2/region/asia";
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, query, null,
                 response -> {
                     try {
                         for (int i=0;i<response.length();i++){
+                            //System.out.println("i: " + i);
                             JSONObject country = (JSONObject) response.get(i);
-                            CountryModel model = new CountryModel();
+                            CountryModel model = new CountryModel(i+1);
 
                             model.setName(country.getString("name"));
                             model.setCapital(country.getString("capital"));
@@ -41,14 +44,44 @@ public class CountryDataService {
                             model.setRegion(country.getString("region"));
                             model.setSubregion(country.getString("subregion"));
                             model.setPopulation(country.getLong("population"));
-//                            model.setBorders(country.getJSONArray("borders"));
 
+                            JSONArray jArray = country.getJSONArray("borders");
+                            int k = 0;
+                            String str = "";
+                            if(jArray.length()>0) {
+                                while (k < jArray.length() - 1) {
+                                    str += jArray.getString(k) + ", ";
+                                    //System.out.println("k: " + k);
+                                    k++;
+                                }
+                                str += jArray.getString(k);
+                                //System.out.println("k: " + k);
+                                model.setBorders(str);
+                            }
+
+                            str="";
+                            k=0;
+                            jArray = country.getJSONArray("languages");
+                            if(jArray.length()>0) {
+                                while (k < jArray.length() - 1) {
+                                    str += jArray.getJSONObject(k).getString("name") + ", ";
+                                    //System.out.println("k: " + k);
+                                    k++;
+                                }
+                                str += jArray.getJSONObject(k).getString("name");
+                                //System.out.println("k: " + k);
+                                model.setLanguages(str);
+                            }
+
+                            countryList.add(model);
                         }
+                        responseListener.onResponse(countryList);
                     }catch (Exception e){
                         e.printStackTrace();
                     }
                 }, error -> {
-
+                    responseListener.onError("Some Error Occured");
+                    Toast.makeText(context, "Some error occured", Toast.LENGTH_SHORT).show();
                 });
 
         MySingleton.getInstance(context).addToRequestQueue(jsonArrayRequest);

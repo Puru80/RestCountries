@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">RestCountries</string>
     <string name="region_asia">Region: Asia</string>
+    <string name="delete_data_from_room">Delete Data From Room</string>
 </resources>
