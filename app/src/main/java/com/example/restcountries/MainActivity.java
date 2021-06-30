@@ -13,6 +13,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.restcountries.roomdb.AppData;
@@ -31,14 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         AppCompatButton deleteBtn = findViewById(R.id.appCompatButton);
-
-        /*final Migration MIGRATION_1_2 = new Migration(1, 2) {
-            @Override
-            public void migrate(@NonNull SupportSQLiteDatabase database) {
-                database.execSQL("ALTER TABLE 'countrymodel' "
-                        + " ADD COLUMN 'id' INTEGER NOT NULL");
-            }
-        };*/
+        AppCompatButton fetChData = findViewById(R.id.getDAta);
 
         AppData appDatabase = Room.databaseBuilder(getApplicationContext(),
                 AppData.class, "country_data").build();
@@ -53,34 +47,51 @@ public class MainActivity extends AppCompatActivity {
                 public void onError(String message) {
                     Toast.makeText(MainActivity.this, "Some error Occured", Toast.LENGTH_SHORT).show();
                 }
-
                 @Override
                 public void onResponse(List<CountryModel> models) {
-                    new Thread(() ->
-                    {
-                        CountryDAO dao = appDatabase.countryDAO();
-                        dao.delete();
-                        dao.insertAll(models);
-                    }).start();
+                    modelList = models;
                 }
             });
         }
         else{
             new Thread(() ->{
                 CountryDAO dao = appDatabase.countryDAO();
-                modelList = dao.getAll();
+                countryDataService.list = dao.getAll();
             }).start();
         }
 
-        if(modelList.isEmpty())
-            Toast.makeText(this, "Database empty, Please connect to internet and restart the app",
-                    Toast.LENGTH_SHORT).show();
-        else{
-            RecyclerView recyclerView = findViewById(R.id.countryList);
-            CountryAdapter adapter = new CountryAdapter(modelList, network);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        }
+        fetChData.setOnClickListener(v -> {
+            if(checkNetworkConnection()) {
+                countryDataService.getCountryData(new CountryDataService.VolleyResponseListener() {
+                    @Override
+                    public void onError(String message) {
+                        Toast.makeText(MainActivity.this, "Some error Occured", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onResponse(List<CountryModel> models) {
+                        modelList = models;
+                    }
+                });
+            }
+            else{
+                new Thread(() ->{
+                    CountryDAO dao = appDatabase.countryDAO();
+                    countryDataService.list = dao.getAll();
+                }).start();
+            }
+
+            if(countryDataService.list.isEmpty())
+                Toast.makeText(this, "Database empty, Please connect to internet and try again",
+                        Toast.LENGTH_SHORT).show();
+            else{
+                RecyclerView recyclerView = findViewById(R.id.countryList);
+                CountryAdapter adapter = new CountryAdapter(modelList, network);
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+                countryDataService.storeDataRoom(modelList);
+            }
+        });
 
         deleteBtn.setOnClickListener(v -> {
             new Thread(() -> {

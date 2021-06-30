@@ -35,8 +35,21 @@
         android:padding="@dimen/_5sdp"
         android:text="@string/delete_data_from_room"
         android:textColor="@color/white"
+        android:layout_marginRight="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_20sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/getDAta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_700"
+        android:padding="@dimen/_5sdp"
+        android:text="@string/fetch_data"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/appCompatButton"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

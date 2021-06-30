@@ -1,6 +1,8 @@
 package com.example.restcountries;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.restcountries.roomdb.CountryModel;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 public class CountryAdapter extends RecyclerView.Adapter<CountryAdapter.ViewHolder> {
@@ -36,36 +41,12 @@ public class CountryAdapter extends RecyclerView.Adapter<CountryAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CountryModel model = list.get(position);
 
-        holder.countryName.setText(model.getName());
-        holder.countryCapital.setText(model.getCapital());
+        holder.countryName.setText("Name: " + model.getName());
+        holder.countryCapital.setText("Capital: " + model.getCapital());
         holder.countryRegion.setText("Region: " + model.getRegion() + ", " + "SubRegion: " + model.getSubregion());
-        holder.countryPopulation.setText((int) model.getPopulation());
-
-        /*int i = 0;
-        String str = "";
-        while(i<model.getBorders().size()-1){
-            str += model.getBorders().get(i) + ", ";
-            i++;
-        }
-        str += model.getBorders().get(i);
-        holder.countryBorders.setText(str);
-
-        i=0;
-        str = "";
-        while(i<model.getLanguages().size()-1){
-            str += model.getLanguages().get(i) + ", ";
-            i++;
-        }
-        str += model.getLanguages().get(i);
-        holder.countryLang.setText(str);*/
-
-        holder.countryLang.setText(model.getLanguages());
-        holder.countryBorders.setText(model.getBorders());
-
-        if(network){
-            Picasso.get().load(model.getFlag()).into(holder.flag);
-        }
-        else holder.flag.setImageResource(R.drawable.ic_baseline_flag_24);
+        holder.countryPopulation.setText("Population: " + model.getPopulation());
+        holder.countryLang.setText("Languages: " + model.getLanguages());
+        holder.countryBorders.setText("Borders: " + model.getBorders());
 
     }
 

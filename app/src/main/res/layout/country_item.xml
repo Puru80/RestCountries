@@ -15,7 +15,7 @@
             android:id="@+id/flag"
             android:layout_width="@dimen/_70sdp"
             android:layout_height="@dimen/_50sdp"
-            android:src="@color/design_default_color_on_primary"
+            android:src="@drawable/ic_baseline_flag_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -85,6 +85,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/countryBorders" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_2sdp"
+            android:background="@color/black"
+            android:paddingTop="@dimen/_2sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/countryLanguages"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

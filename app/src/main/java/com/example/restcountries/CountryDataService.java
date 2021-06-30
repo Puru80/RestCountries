@@ -3,8 +3,12 @@ package com.example.restcountries;
 import android.content.Context;
 import android.widget.Toast;
 
+import androidx.room.Room;
+
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.example.restcountries.roomdb.AppData;
+import com.example.restcountries.roomdb.CountryDAO;
 import com.example.restcountries.roomdb.CountryModel;
 
 import org.json.JSONArray;
@@ -15,6 +19,7 @@ import java.util.List;
 
 public class CountryDataService {
     Context context;
+    List<CountryModel> list = new ArrayList<>();
 
     public CountryDataService(Context context) {
         this.context = context;
@@ -24,6 +29,16 @@ public class CountryDataService {
         void onError(String message);
 
         void onResponse(List<CountryModel> models);
+    }
+
+    public void storeDataRoom(List<CountryModel> countryList){
+        new Thread(() -> {
+            AppData appDatabase = Room.databaseBuilder(context,
+                    AppData.class, "country_data").build();
+            CountryDAO dao = appDatabase.countryDAO();
+            dao.delete();
+            dao.insertAll(countryList);
+        }).start();
     }
 
     public void getCountryData(VolleyResponseListener responseListener){
@@ -75,7 +90,11 @@ public class CountryDataService {
 
                             countryList.add(model);
                         }
+                        list = countryList;
+
                         responseListener.onResponse(countryList);
+
+
                     }catch (Exception e){
                         e.printStackTrace();
                     }
