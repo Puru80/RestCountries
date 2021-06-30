@@ -25,42 +25,34 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private List<CountryModel> modelList = new ArrayList<>();
+    private AppCompatButton deleteBtn, fetchData;
+    final CountryDataService countryDataService = new CountryDataService(MainActivity.this);
+    AppData appDatabase;
+    boolean network;
+    private RecyclerView recyclerView;
+    private CountryAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AppCompatButton deleteBtn = findViewById(R.id.appCompatButton);
-        AppCompatButton fetChData = findViewById(R.id.getDAta);
+        setupUI();
+        listeners();
+    }
 
-        AppData appDatabase = Room.databaseBuilder(getApplicationContext(),
+    public void setupUI(){
+        deleteBtn = findViewById(R.id.appCompatButton);
+        fetchData = findViewById(R.id.getDAta);
+        appDatabase = Room.databaseBuilder(getApplicationContext(),
                 AppData.class, "country_data").build();
+        network = checkNetworkConnection();
 
-        boolean network = checkNetworkConnection();
+        recyclerView = findViewById(R.id.countryList);
+    }
 
-        final CountryDataService countryDataService = new CountryDataService(MainActivity.this);
-
-        if(network) {
-            countryDataService.getCountryData(new CountryDataService.VolleyResponseListener() {
-                @Override
-                public void onError(String message) {
-                    Toast.makeText(MainActivity.this, "Some error Occured", Toast.LENGTH_SHORT).show();
-                }
-                @Override
-                public void onResponse(List<CountryModel> models) {
-                    modelList = models;
-                }
-            });
-        }
-        else{
-            new Thread(() ->{
-                CountryDAO dao = appDatabase.countryDAO();
-                countryDataService.list = dao.getAll();
-            }).start();
-        }
-
-        fetChData.setOnClickListener(v -> {
+    public void listeners(){
+        fetchData.setOnClickListener(v -> {
             if(checkNetworkConnection()) {
                 countryDataService.getCountryData(new CountryDataService.VolleyResponseListener() {
                     @Override
@@ -84,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Database empty, Please connect to internet and try again",
                         Toast.LENGTH_SHORT).show();
             else{
-                RecyclerView recyclerView = findViewById(R.id.countryList);
-                CountryAdapter adapter = new CountryAdapter(modelList, network);
+                adapter = new CountryAdapter(countryDataService.list, network);
                 recyclerView.setAdapter(adapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
